@@ -9,7 +9,8 @@ const TakeRecord = () => {
   const [gender, setGender] = useState("Male");
 
   // for holding all the user data as an object
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState(JSON.parse(localStorage.getItem("storedData")) || []);
+  console.log(typeof userData);
 
   // adding the name to it's respective variable
   const newName = (event) => {
@@ -38,33 +39,37 @@ const TakeRecord = () => {
     let myData = [...userData, newData];
     setUserData(myData);
 
-    // cleaning all the input fields
-    setName("");
-    setDepartment("");
-    setdob("");
-    setGender("");
-    };
+    // resetting the form value
+    event.target.reset();
+  };
+  
+   // function to clear all the stored data
+   const clearStorage = () => {
+    localStorage.removeItem("storedData");
+     setUserData([]);
+  }
     
-    // useEffect(() => {
-    //     return <DisplayRecord data={userData} />
-    // }, [userData])
+    useEffect(() => {
+      localStorage.setItem("storedData", JSON.stringify(userData));
+    }, [userData])
 
   return (
     <>
-      <form className="flex items-center justify-around text-white font-semibold bg-cyan-600 py-2">
+      <form className="flex items-center justify-around text-white font-semibold bg-cyan-600 py-2" onSubmit={addRecord}>
         <section>
           <span>Name : </span>
           <input
-            className="bg-transparent"
+            className="bg-transparent outline-none border border-white px-2"
             placeholder="Student Name"
             required
             onChange={newName}
+            itemRef={name}
           ></input>
         </section>
 
         <section>
           <span>Department : </span>
-          <select className="bg-transparent" required onChange={newDept}>
+          <select className="bg-cyan-600 cursor-pointer" required onChange={newDept}>
             <option>BA</option>
             <option>BSc</option>
             <option>BCom</option>
@@ -76,7 +81,7 @@ const TakeRecord = () => {
         <section>
           <span>DOB : </span>
           <input
-            className="bg-transparent"
+            className="bg-transparent cursor-pointer"
             type="date"
             required
             onChange={newDOB}
@@ -85,21 +90,25 @@ const TakeRecord = () => {
 
         <section>
           <span>Gender : </span>
-          <select className="bg-transparent" required>
+          <select className="bg-cyan-600 cursor-pointer" required>
             <option>Male</option>
             <option>Female</option>
             <option>Other</option>
           </select>
         </section>
 
-        <button type="submit" onClick={addRecord}>
+        <button type="submit" className="border border-white px-6 rounded hover:bg-cyan-800">
           Add
         </button>
           </form>
           
 
       {/* using the display record to display all the data on the dom */}
-          <DisplayRecord data={ userData } />
+      <DisplayRecord data={userData} />
+      
+      <button type="submit" className="border border-white text-white font-bold mt-6 px-2 rounded hover:bg-cyan-600 relative left-[45%]" onClick={clearStorage}>
+          Clear All Record
+        </button>
     </>
   );
 };
